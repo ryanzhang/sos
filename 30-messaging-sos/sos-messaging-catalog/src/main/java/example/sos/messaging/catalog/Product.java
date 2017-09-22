@@ -52,15 +52,8 @@ public class Product extends AbstractAggregateRoot<Product> {
 		return product;
 	}
 
-	interface Typed {
-
-		default String getType() {
-			return getClass().getSimpleName();
-		}
-	}
-
 	@Value(staticConstructor = "of")
-	public static class ProductAdded implements Typed {
+	public static class ProductAdded {
 
 		Product product;
 

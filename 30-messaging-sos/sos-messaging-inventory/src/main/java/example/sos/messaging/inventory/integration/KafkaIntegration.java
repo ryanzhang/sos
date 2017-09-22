@@ -17,21 +17,20 @@ package example.sos.messaging.inventory.integration;
 
 import example.sos.messaging.inventory.Inventory;
 import example.sos.messaging.inventory.InventoryItem;
-import example.sos.messaging.inventory.integration.Payloads.OrderCompleted;
-import example.sos.messaging.inventory.integration.Payloads.ProductAdded;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.projection.ProjectionFactory;
+import org.springframework.data.web.JsonPath;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Oliver Gierke
@@ -50,7 +49,7 @@ class KafkaIntegration {
 	 * @param message
 	 */
 	@KafkaListener(topics = "products")
-	public void onProductAdded(Message<String> message) throws IOException {
+	public void onProductAdded(String message) throws IOException {
 
 		ProductAdded event = readFromMessage(message, ProductAdded.class);
 
@@ -71,9 +70,8 @@ class KafkaIntegration {
 	 * 
 	 * @param event
 	 */
-	@Transactional
 	@KafkaListener(topics = "orders")
-	void onOrderCompleted(Message<String> message) {
+	void onOrderCompleted(String message) {
 
 		OrderCompleted event = readFromMessage(message, OrderCompleted.class);
 
@@ -84,12 +82,37 @@ class KafkaIntegration {
 				.forEach(it -> inventory.updateInventoryItem(it.getProductNumber(), it.getQuantity()));
 	}
 
-	private <T> T readFromMessage(Message<String> message, Class<T> type) {
+	private <T> T readFromMessage(String message, Class<T> type) {
 
-		try (InputStream stream = new ByteArrayInputStream(message.getPayload().getBytes())) {
+		try (InputStream stream = new ByteArrayInputStream(message.getBytes())) {
 			return projectionFactory.createProjection(type, stream);
 		} catch (IOException o_O) {
 			throw new RuntimeException(o_O);
 		}
+	}
+
+	interface OrderCompleted {
+
+		@JsonPath("$.order.id")
+		UUID getOrderId();
+
+		@JsonPath("$.order.lineItems")
+		Collection<LineItem> getLineItems();
+
+		interface LineItem {
+
+			UUID getProductNumber();
+
+			Long getQuantity();
+		}
+	}
+
+	interface ProductAdded {
+
+		@JsonPath("$.product.id")
+		UUID getProductId();
+
+		@JsonPath("$.product.name")
+		String getName();
 	}
 }

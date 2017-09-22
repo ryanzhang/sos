@@ -15,19 +15,17 @@
  */
 package example.sos.messaging.orders.integration;
 
-import example.sos.messaging.orders.Order.OrderCompleted;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import example.sos.messaging.orders.ProductInfo;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.EventListener;
 import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.data.web.JsonProjectingMethodInterceptorFactory;
-import org.springframework.kafka.core.KafkaOperations;
-import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 
 /**
@@ -48,16 +46,15 @@ class MessagingConfiguration {
 		return factory;
 	}
 
-	@Component
-	@RequiredArgsConstructor
-	static class KafkaIntegration {
+	@Bean
+	SimpleModule ordersModule() {
 
-		private final @NonNull KafkaOperations<Object, Object> jms;
-		private final @NonNull ObjectMapper mapper;
+		SimpleModule simpleModule = new SimpleModule();
+		simpleModule.setMixInAnnotation(ProductInfo.ProductNumber.class, ProductNumberMixin.class);
 
-		@EventListener
-		void on(OrderCompleted event) throws Exception {
-			jms.send("orders", mapper.writeValueAsString(event));
-		}
+		return simpleModule;
 	}
+
+	@JsonSerialize(using = ToStringSerializer.class)
+	interface ProductNumberMixin {}
 }
