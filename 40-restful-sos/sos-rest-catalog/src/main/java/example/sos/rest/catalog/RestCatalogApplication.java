@@ -38,7 +38,7 @@ public class RestCatalogApplication {
 	}
 
 	@Bean(autowire = Autowire.BY_TYPE)
-	ControllerLinkBuilderFactory foo() {
+	ControllerLinkBuilderFactory linkBuilderFactory() {
 		return new ControllerLinkBuilderFactory();
 	}
 

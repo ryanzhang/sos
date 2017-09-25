@@ -15,6 +15,9 @@
  */
 package example.sos.rest.inventory.integration;
 
+import example.sos.rest.events.client.EnableEventClient;
+import example.sos.rest.events.client.EventClientConfigurer;
+
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.hypermedia.DiscoveredResource;
@@ -29,6 +32,7 @@ import org.springframework.web.client.RestTemplate;
  */
 @Configuration
 @EnableScheduling
+@EnableEventClient
 class IntegrationConfiguration {
 
 	@Bean
@@ -37,9 +41,26 @@ class IntegrationConfiguration {
 	}
 
 	@Bean
-	RemoteResource productResource() {
+	EventClientConfigurer clientConfigurer() {
+
+		return client -> {
+			client.add(CatalogIntegration.PRODUCTS_ADDED, catalogEventsResource());
+			client.add(OrdersIntegration.ORDER_COMPLETED, orderEventsResource());
+		};
+	}
+
+	@Bean
+	RemoteResource catalogEventsResource() {
 
 		ServiceInstance service = new DefaultServiceInstance("catalog", "localhost", 7070, false);
+
+		return new DiscoveredResource(() -> service, traverson -> traverson.follow("events"));
+	}
+
+	@Bean
+	RemoteResource orderEventsResource() {
+
+		ServiceInstance service = new DefaultServiceInstance("orders", "localhost", 7072, false);
 
 		return new DiscoveredResource(() -> service, traverson -> traverson.follow("events"));
 	}

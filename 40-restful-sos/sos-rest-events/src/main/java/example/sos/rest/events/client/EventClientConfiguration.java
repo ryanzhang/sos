@@ -13,33 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package example.sos.rest.events;
+package example.sos.rest.events.client;
 
-import example.sos.rest.events.EnablePersistentEvents.FooConfiguration;
+import lombok.RequiredArgsConstructor;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.List;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.web.client.RestOperations;
 
 /**
  * @author Oliver Gierke
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-@Import(FooConfiguration.class)
-public @interface EnablePersistentEvents {
+@Configuration
+@EnableAutoConfiguration
+@RequiredArgsConstructor
+public class EventClientConfiguration {
 
-	@Configuration
-	@ComponentScan(excludeFilters = @Filter(classes = Configuration.class))
-	@EnableAutoConfiguration
-	static class FooConfiguration {
+	private final List<EventClientConfigurer> configurers;
 
+	@Bean
+	IntegrationOperations integrationOperations(IntegrationRepository repository) {
+		return new IntegrationOperations(repository);
+	}
+
+	@Bean
+	ConfigurableEventClient eventClient(IntegrationOperations operations, RestOperations restOperations) {
+
+		ConfigurableEventClient client = new ConfigurableEventClient(operations, restOperations);
+
+		configurers.forEach(it -> it.configure(client));
+
+		return client;
 	}
 }

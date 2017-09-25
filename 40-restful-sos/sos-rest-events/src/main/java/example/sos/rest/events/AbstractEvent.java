@@ -15,6 +15,7 @@
  */
 package example.sos.rest.events;
 
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -39,21 +40,12 @@ public abstract class AbstractEvent<T> implements Event {
 
 	private final @Id UUID id = UUID.randomUUID();
 	private final LocalDateTime publicationDate = LocalDateTime.now();
-	private final Class<?> aggregateType;
+	private final @Getter(AccessLevel.NONE) Class<?> aggregateType;
 
 	protected AbstractEvent() {
 
 		this.aggregateType = ResolvableType //
 				.forClass(AbstractEvent.class, this.getClass()) //
 				.resolveGeneric(0);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see example.sos.rest.events.Event#getAggregateType()
-	 */
-	@Override
-	public Class<?> getAggregateType() {
-		return aggregateType;
 	}
 }

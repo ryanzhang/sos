@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package example.sos.rest.events;
-
-import java.time.LocalDateTime;
+package example.sos.rest.events.client;
 
 /**
  * @author Oliver Gierke
  */
-public interface Event {
+public interface EventClientConfigurer {
 
-	LocalDateTime getPublicationDate();
+	void configure(ConfigurableEventClient client);
 }

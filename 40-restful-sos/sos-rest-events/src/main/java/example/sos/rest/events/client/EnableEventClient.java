@@ -13,14 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package example.sos.rest.events;
+package example.sos.rest.events.client;
 
-import java.time.LocalDateTime;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.springframework.context.annotation.Import;
 
 /**
  * @author Oliver Gierke
  */
-public interface Event {
-
-	LocalDateTime getPublicationDate();
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Import(EventClientConfiguration.class)
+public @interface EnableEventClient {
 }

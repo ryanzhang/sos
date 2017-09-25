@@ -37,6 +37,7 @@ import javax.persistence.Id;
 @Data
 @Entity
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 public class ProductInfo {
 
 	private @Id UUID id;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package example.sos.rest.inventory.integration;
+package example.sos.rest.events.client;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -38,12 +38,12 @@ import javax.persistence.Id;
 @Setter(AccessLevel.NONE)
 @NoArgsConstructor(force = true, access = AccessLevel.PACKAGE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-class Integration {
+public class Integration {
 
 	private final @GeneratedValue @Id UUID id;
-	private final @Wither(AccessLevel.PACKAGE) LocalDateTime catalogUpdate;
+	private final @Wither LocalDateTime lastUpdate;
 
-	Optional<LocalDateTime> getCatalogUpdate() {
-		return Optional.ofNullable(catalogUpdate);
+	public Optional<LocalDateTime> getLastUpdate() {
+		return Optional.ofNullable(lastUpdate);
 	}
 }

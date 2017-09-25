@@ -19,12 +19,10 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
 import org.springframework.data.rest.webmvc.RepositoryLinksResource;
 import org.springframework.hateoas.ResourceProcessor;
-import org.springframework.stereotype.Component;
 
 /**
  * @author Oliver Gierke
  */
-@Component
 class EventsResourceProcessor implements ResourceProcessor<RepositoryLinksResource> {
 
 	/*

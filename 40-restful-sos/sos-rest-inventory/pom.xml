@@ -28,9 +28,9 @@
 		<!-- Integration -->
 
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-commons</artifactId>
-			<version>${spring-cloud.version}</version>
+			<groupId>de.olivergierke.sos</groupId>
+			<artifactId>sos-rest-events</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>

@@ -18,15 +18,12 @@ package example.sos.rest.inventory.integration;
 import example.sos.rest.events.client.EventClient;
 import example.sos.rest.events.client.Integration;
 import example.sos.rest.inventory.Inventory;
-import example.sos.rest.inventory.InventoryItem;
-import example.sos.rest.inventory.InventoryItem.ProductId;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.TypeReferences.ResourcesType;
@@ -39,23 +36,23 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-class CatalogIntegration {
+class OrdersIntegration {
 
-	static final ResourcesType<Resource<ProductAdded>> PRODUCTS_ADDED = new ResourcesType<Resource<ProductAdded>>() {};
+	static final ResourcesType<Resource<OrderCompleted>> ORDER_COMPLETED = new ResourcesType<Resource<OrderCompleted>>() {};
 
 	private final EventClient events;
 	private final Inventory inventory;
 
 	@Scheduled(fixedDelay = 5000)
-	public void updateProducts() {
+	public void updateOrders() {
 
-		log.info("Catalog integration update triggered…");
+		log.info("Orders integration update triggered…");
 
-		events.doWithIntegration(PRODUCTS_ADDED, (productAdded, repository) -> {
+		events.doWithIntegration(ORDER_COMPLETED, (order, repository) -> {
 
-			log.info("Processing {} new events…", productAdded.getContent().size());
+			log.info("Processing {} new events…", order.getContent().size());
 
-			productAdded.forEach(resource -> {
+			order.forEach(resource -> {
 
 				Integration integration = repository.apply(() -> initInventory(resource),
 						it -> it.withLastUpdate(resource.getContent().getPublicationDate()));
@@ -67,27 +64,21 @@ class CatalogIntegration {
 		});
 	}
 
-	private void initInventory(Resource<ProductAdded> resource) {
+	private void initInventory(Resource<OrderCompleted> resource) {
 
-		ProductId productId = ProductId.of(resource.getLink("product").getHref());
-
-		log.info("Creating inventory item for product {}.", resource.getContent().getProduct().getDescription());
-
-		inventory.findByProductId(productId) //
-				.orElseGet(() -> inventory.save(InventoryItem.of(productId, 0)));
 	}
 
-	@Data
-	public static class ProductAdded {
+	interface OrderCompleted {
 
-		Product product;
-		LocalDateTime publicationDate;
+		LocalDateTime getPublicationDate();
 
-		@Data
-		public static class Product {
+		List<LineItem> getLineItems();
 
-			String description;
-			BigDecimal price;
+		interface LineItem {
+
+			String getProductId();
+
+			long getAmoung();
 		}
 	}
 }

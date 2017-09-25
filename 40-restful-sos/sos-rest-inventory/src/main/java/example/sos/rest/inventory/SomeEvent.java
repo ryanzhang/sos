@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package example.sos.rest.events;
+package example.sos.rest.inventory;
 
-import java.time.LocalDateTime;
+import example.sos.rest.events.AbstractEvent;
+
+import javax.persistence.Entity;
 
 /**
  * @author Oliver Gierke
  */
-public interface Event {
+@Entity
+public class SomeEvent extends AbstractEvent<InventoryItem> {
 
-	LocalDateTime getPublicationDate();
 }

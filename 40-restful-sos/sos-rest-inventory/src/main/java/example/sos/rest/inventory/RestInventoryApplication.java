@@ -15,12 +15,15 @@
  */
 package example.sos.rest.inventory;
 
+import example.sos.rest.events.EnablePersistentEvents;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * @author Oliver Gierke
  */
+@EnablePersistentEvents
 @SpringBootApplication
 public class RestInventoryApplication {
 

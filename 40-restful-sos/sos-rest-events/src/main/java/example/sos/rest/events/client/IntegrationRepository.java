@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package example.sos.rest.inventory.integration;
+package example.sos.rest.events.client;
 
 import java.util.Iterator;
 import java.util.UUID;
-import java.util.function.Function;
 
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Oliver Gierke
@@ -32,13 +30,5 @@ interface IntegrationRepository extends CrudRepository<Integration, UUID> {
 		Iterator<Integration> iterator = findAll().iterator();
 
 		return iterator.hasNext() ? iterator.next() : save(new Integration());
-	}
-
-	@Transactional
-	default Integration apply(Runnable runnable, Function<Integration, Integration> callback) {
-
-		runnable.run();
-
-		return save(callback.apply(findUniqueIntegration()));
 	}
 }

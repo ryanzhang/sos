@@ -13,34 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package example.sos.rest.orders.integration;
+package example.sos.rest.events.api;
 
-import org.springframework.cloud.client.DefaultServiceInstance;
-import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.hypermedia.DiscoveredResource;
-import org.springframework.cloud.client.hypermedia.RemoteResource;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.data.mapping.context.PersistentEntities;
+import org.springframework.data.rest.webmvc.RepositoryLinksResource;
+import org.springframework.hateoas.EntityLinks;
+import org.springframework.hateoas.ResourceProcessor;
 
 /**
  * @author Oliver Gierke
  */
 @Configuration
-@EnableScheduling
-class IntegrationConfiguration {
+class SpringDataRestEventsAutoConfiguration {
 
 	@Bean
-	RestTemplate restTemplate() {
-		return new RestTemplate();
+	@ConditionalOnClass(ResourceProcessor.class)
+	EventResourceProcessor eventResourceProcessor(PersistentEntities entities, EntityLinks entityLinks) {
+		return new EventResourceProcessor(entities, entityLinks);
 	}
 
 	@Bean
-	RemoteResource productResource() {
-
-		ServiceInstance service = new DefaultServiceInstance("catalog", "localhost", 7070, false);
-
-		return new DiscoveredResource(() -> service, traverson -> traverson.follow("events"));
+	@ConditionalOnClass(RepositoryLinksResource.class)
+	EventsResourceProcessor eventsResourceProcessor() {
+		return new EventsResourceProcessor();
 	}
 }

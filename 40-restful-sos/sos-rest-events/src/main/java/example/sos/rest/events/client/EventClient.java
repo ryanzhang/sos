@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package example.sos.rest.events;
+package example.sos.rest.events.client;
 
-import java.time.LocalDateTime;
+import java.util.function.BiConsumer;
+
+import org.springframework.core.ParameterizedTypeReference;
 
 /**
  * @author Oliver Gierke
  */
-public interface Event {
+public interface EventClient {
 
-	LocalDateTime getPublicationDate();
+	<T> void doWithIntegration(ParameterizedTypeReference<T> type, BiConsumer<T, IntegrationOperations> callback);
 }

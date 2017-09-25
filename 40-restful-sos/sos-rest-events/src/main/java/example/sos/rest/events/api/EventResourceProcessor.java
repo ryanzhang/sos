@@ -27,14 +27,12 @@ import org.springframework.data.mapping.context.PersistentEntities;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceProcessor;
-import org.springframework.stereotype.Component;
 
 /**
  * @author Oliver Gierke
  */
-@Component
 @RequiredArgsConstructor
-public class EventResourceProcessor implements ResourceProcessor<Resource<Event>> {
+class EventResourceProcessor implements ResourceProcessor<Resource<Event>> {
 
 	private final PersistentEntities entities;
 	private final EntityLinks links;

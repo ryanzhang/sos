@@ -13,30 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package example.sos.rest.catalog;
+package example.sos.rest.events.client;
 
-import example.sos.rest.events.AbstractEvent;
-import example.sos.rest.events.AggregateReference;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import java.util.function.Function;
 
-import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-@Value
-@Entity
-@EqualsAndHashCode(callSuper = true)
-@RequiredArgsConstructor(staticName = "of")
-@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
-class ProductAdded extends AbstractEvent<Product> {
+/**
+ * @author Oliver Gierke
+ */
+@Component
+@RequiredArgsConstructor
+public class IntegrationOperations {
 
-	@ManyToOne //
-	@RestResource(exported = false) //
-	@AggregateReference //
-	Product product;
+	private final IntegrationRepository repository;
+	
+	Integration findUniqueIntegration() {
+		return repository.findUniqueIntegration();
+	}
+
+	@Transactional
+	public Integration apply(Runnable runnable, Function<Integration, Integration> callback) {
+
+		runnable.run();
+
+		return repository.save(callback.apply(repository.findUniqueIntegration()));
+	}
 }
