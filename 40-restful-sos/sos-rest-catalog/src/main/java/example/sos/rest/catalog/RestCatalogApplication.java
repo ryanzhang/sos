@@ -37,10 +37,10 @@ public class RestCatalogApplication {
 		SpringApplication.run(RestCatalogApplication.class, args);
 	}
 
-	@Bean(autowire = Autowire.BY_TYPE)
-	ControllerLinkBuilderFactory foo() {
-		return new ControllerLinkBuilderFactory();
-	}
+	// @Bean(autowire = Autowire.BY_TYPE)
+	// ControllerLinkBuilderFactory foo() {
+	// 	return new ControllerLinkBuilderFactory();
+	// }
 
 	@Bean
 	CommandLineRunner run(Catalog catalog) {
